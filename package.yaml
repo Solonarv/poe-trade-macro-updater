@@ -1,0 +1,35 @@
+name:                poe-trade-macro-updater
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/Solonarv/poe-trade-macro-updater#readme
+license:             BSD3
+author:              Solonarv
+maintainer:          nstamm@gmx.de
+copyright:           2018 Solonarv
+category:            Web
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - github
+
+executables:
+  poe-trade-macro-updater:
+    source-dirs:      src
+    main:             Main.hs
+
+default-extensions: &extensions
+  - LambdaCase
+  - PatternSynonyms
+  - GeneralizedNewtypeDeriving
+  - DeriveFunctor
+  - DeriveFoldable
+  - DeriveTraversable
+  - ScopedTypeVariables
+  - GADTs
+  - TypeFamilies
+  - RankNTypes
+  - ViewPatterns
+  - TypeApplications
