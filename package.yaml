@@ -22,6 +22,7 @@ dependencies:
   - req
   - directory
   - data-default
+  - process
 
 executables:
   poe-trade-macro-updater:

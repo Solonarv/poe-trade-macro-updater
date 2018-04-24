@@ -21,6 +21,7 @@ import qualified Data.Vector as V
 import qualified GitHub.Endpoints.Repos.Releases as GH
 import Network.HTTP.Req
 import System.Directory (createDirectoryIfMissing)
+import System.Process (spawnCommand)
 
 repo :: IO (GH.Name GH.Owner, GH.Name GH.Repo)
 repo = pure ("PoE-TradeMacro", "POE-TradeMacro")
@@ -39,15 +40,16 @@ main = do
   rel <- exitIfError =<< uncurry GH.releases =<< repo
   ver <- getInstalledVersion
   let diff = V.takeWhile ((/= ver) . GH.releaseTagName) rel
-  when (V.null diff) $
-    putStrLn "Already up to date" >> exitSuccess
-  printChanges diff
-  when (V.null $ GH.releaseAssets $ V.head diff) $
-    putStrLn "Newest release has no associated assets! Using newest existing release instead."
-  let releasesWithAssets = V.filter (not . V.null . GH.releaseAssets) diff
-  when (V.null releasesWithAssets) $
-    putStrLn "No new release with downloadable assets found. Exiting." >> exitFailure
-  downloadAndInstall $ V.head releasesWithAssets
+  if V.null diff
+    then putStrLn "Already up to date"
+    else do
+      printChanges diff
+      when (V.null $ GH.releaseAssets $ V.head diff) $
+        putStrLn "Newest release has no associated assets! Using newest existing release instead."
+      let releasesWithAssets = V.filter (not . V.null . GH.releaseAssets) diff
+      when (V.null releasesWithAssets) $
+        putStrLn "No new release with downloadable assets found. Exiting." >> exitFailure
+      downloadAndInstall $ V.head releasesWithAssets
   args <- getArgs
   when (not $ "--nolaunch" `elem` args) $
     putStrLn "Launching TradeMacro..." >> launchTradeMacro
@@ -89,4 +91,6 @@ downloadAndInstall GH.Release{..} = do
   T.writeFile vf releaseTagName
 
 launchTradeMacro :: IO ()
-launchTradeMacro = pure ()
+launchTradeMacro = do
+  launchTarget <- (</> "Run_TradeMacro.ahk") <$> trademacroDir
+  () <$ spawnCommand ("start " <> launchTarget)
