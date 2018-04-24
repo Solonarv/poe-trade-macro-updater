@@ -14,6 +14,14 @@ extra-source-files:
 dependencies:
   - base >= 4.7 && < 5
   - github
+  - vector
+  - filepath
+  - text
+  - zip-archive
+  - binary
+  - req
+  - directory
+  - data-default
 
 executables:
   poe-trade-macro-updater:
